@@ -22,7 +22,8 @@ public class ImagesServer {
                 ServerSocket serverSocket = new ServerSocket(i);
                 while (true) { // loop where the server wait for client to start his connection may need to make these process in another thread
                     Socket client = serverSocket.accept();
-                    new ClientConnection(client);
+                    new Thread(new ClientConnection(client)).start();
+
                 }
             } catch (IOException e) {
                 //Error reporting 4 Debugging later will use log class

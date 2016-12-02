@@ -14,24 +14,15 @@ import java.util.Scanner;
  * Created by kemo on 23/10/2016.
  */
 
-class ClientConnection implements Connection , SocialAppImages {
+class ClientConnection implements Runnable, Connection , SocialAppImages {
     private Socket clientSocket;
     private final String IMAGES_FOLDER = "Images\\";
     private static final String IMAGES_ID_FILE = "ID.sasf";
     private static int imageID;
     ClientConnection(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        FilesManager.CreateFolder(IMAGES_FOLDER);
-        File file = new File("ID.ISSF");
-        try {
-            Scanner scanner = new Scanner(file);
-            imageID = scanner.nextInt();
-        } catch (FileNotFoundException e) {
-            imageID = 0;
-        }
-
         sendVerificationCode();
-        startConnection();
+
     }
     //TODO #kareem
     //Check for user input info
@@ -96,6 +87,19 @@ class ClientConnection implements Connection , SocialAppImages {
             bufferedWriter.close();
         }
 
+    }
+
+    @Override
+    public void run() {
+        FilesManager.CreateFolder(IMAGES_FOLDER);
+        File file = new File("ID.ISSF");
+        try {
+            Scanner scanner = new Scanner(file);
+            imageID = scanner.nextInt();
+        } catch (FileNotFoundException e) {
+            imageID = 0;
+        }
+        startConnection();
     }
 }
 
