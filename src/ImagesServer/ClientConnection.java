@@ -8,7 +8,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
+
+import static ImagesServer.ImagesServer.imageID;
 
 /**
  * Created by kemo on 23/10/2016.
@@ -16,9 +17,9 @@ import java.util.Scanner;
 
 class ClientConnection implements Runnable, Connection , SocialAppImages {
     private Socket clientSocket;
-    private final String IMAGES_FOLDER = "Images\\";
-    private static final String IMAGES_ID_FILE = "ID.sasf";
-    private static int imageID;
+    static final String IMAGES_FOLDER = "Images\\";
+     static final String IMAGES_ID_FILE = "ID.sasf";
+
     ClientConnection(Socket clientSocket) {
         this.clientSocket = clientSocket;
         sendVerificationCode();
@@ -56,6 +57,13 @@ class ClientConnection implements Runnable, Connection , SocialAppImages {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
     private void sendImage(String ID) throws IOException {
@@ -65,12 +73,12 @@ class ClientConnection implements Runnable, Connection , SocialAppImages {
 
     }
     private void receiveImage() throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(clientSocket.getInputStream());
-        int imageID = ClientConnection.imageID;
+        int imageID = ImagesServer.imageID;
         sendImageID(imageID);
+        BufferedImage bufferedImage = ImageIO.read(clientSocket.getInputStream());
         File file = new File(IMAGES_FOLDER+imageID);
         ImageIO.write(bufferedImage,"jpg",file);
-       increaseImageID();
+        increaseImageID();
     }
     private void sendImageID(int ID) throws IOException {
         DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
@@ -82,8 +90,9 @@ class ClientConnection implements Runnable, Connection , SocialAppImages {
     private synchronized static void increaseImageID() throws IOException {
 
         BufferedWriter bufferedWriter = FilesManager.OpenToWrite(IMAGES_ID_FILE);
+        imageID++;
         if (bufferedWriter != null) {
-            bufferedWriter.write((imageID++)+"");
+            bufferedWriter.write(imageID +"");
             bufferedWriter.close();
         }
 
@@ -91,14 +100,7 @@ class ClientConnection implements Runnable, Connection , SocialAppImages {
 
     @Override
     public void run() {
-        FilesManager.CreateFolder(IMAGES_FOLDER);
-        File file = new File("ID.ISSF");
-        try {
-            Scanner scanner = new Scanner(file);
-            imageID = scanner.nextInt();
-        } catch (FileNotFoundException e) {
-            imageID = 0;
-        }
+
         startConnection();
     }
 }
