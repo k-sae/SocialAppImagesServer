@@ -2,7 +2,7 @@ package ImagesServer;
 
 import FileManagment.FilesManager;
 import SocialAppGeneral.Command;
-import SocialAppGeneral.Connection;
+import SocialServer.GeneralServer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,57 +15,20 @@ import static ImagesServer.ImagesServer.imageID;
  * Created by kemo on 23/10/2016.
  */
 
-class ClientConnection implements Runnable, Connection , SocialAppImages {
-    private Socket clientSocket;
+class ClientConnection extends GeneralServer implements Runnable, SocialAppImages {
+
     static final String IMAGES_FOLDER = "Images\\";
      static final String IMAGES_ID_FILE = "ID.sasf";
 
     ClientConnection(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-        sendVerificationCode();
-
+        super(clientSocket);
     }
-    //TODO #kareem
-    //Check for user input info
-
-    private void sendVerificationCode()
-    {
-        try {
-            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-            dataOutputStream.write(VERIFICATION.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void startConnection() {
-        try {
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-            Command command = Command.fromString(dataInputStream.readUTF());
-            if (command != null && command.getKeyWord().equals(DOWNLOADIMAGE))
-            {
-               sendImage(command.getObjectStr());
-            }
-            else if (command != null && command.getKeyWord().equals(UPLOADIMAGE))
-            {
-                receiveImage();
-            }
-            //TODO #kareem
-            //if any errors introduced remove this
-            clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+      //no thing special need to do on start connection
 
     }
+
     private void sendImage(String ID) throws IOException {
         File file = new File(IMAGES_FOLDER+ID);
         BufferedImage bufferedImage=  ImageIO.read(file);
@@ -100,8 +63,31 @@ class ClientConnection implements Runnable, Connection , SocialAppImages {
 
     @Override
     public void run() {
+        try {
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
+            Command command = Command.fromString(dataInputStream.readUTF());
+            if (command != null && command.getKeyWord().equals(DOWNLOADIMAGE))
+            {
+                sendImage(command.getObjectStr());
+            }
+            else if (command != null && command.getKeyWord().equals(UPLOADIMAGE))
+            {
+                receiveImage();
+            }
+            //TODO #kareem
+            //if any errors introduced remove this
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-        startConnection();
     }
 }
 
