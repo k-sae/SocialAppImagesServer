@@ -15,12 +15,12 @@ import static ImagesServer.ImagesServer.imageID;
  * Created by kemo on 23/10/2016.
  */
 
-class ClientConnection extends GeneralServer implements Runnable, SocialAppImages {
+public class ClientConnection extends GeneralServer implements Runnable, SocialAppImages {
 
     static final String IMAGES_FOLDER = "Images\\";
      static final String IMAGES_ID_FILE = "ID.sasf";
 
-    ClientConnection(Socket clientSocket) {
+    public ClientConnection(Socket clientSocket) {
         super(clientSocket);
     }
     @Override
