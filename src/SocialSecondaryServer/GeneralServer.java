@@ -1,4 +1,4 @@
-package SocialServer;
+package SocialSecondaryServer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

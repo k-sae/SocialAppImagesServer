@@ -1,7 +1,7 @@
 package ImagesServer;
 
 import FileManagment.FilesManager;
-import SocialServer.ServerInitializer;
+import SocialSecondaryServer.ServerInitializer;
 
 import java.io.File;
 import java.io.FileNotFoundException;

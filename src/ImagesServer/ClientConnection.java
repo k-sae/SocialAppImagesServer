@@ -2,7 +2,7 @@ package ImagesServer;
 
 import FileManagment.FilesManager;
 import SocialAppGeneral.Command;
-import SocialServer.GeneralServer;
+import SocialSecondaryServer.GeneralServer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -77,8 +77,7 @@ public class ClientConnection extends GeneralServer implements Runnable, SocialA
             //TODO #kareem
             //if any errors introduced remove this
             clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         finally {
             try {

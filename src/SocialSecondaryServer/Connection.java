@@ -1,4 +1,4 @@
-package SocialServer;
+package SocialSecondaryServer;
 
 /**
  * Created by kemo on 23/10/2016.
