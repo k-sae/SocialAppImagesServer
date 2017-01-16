@@ -30,17 +30,23 @@ public class ClientConnection extends GeneralServer implements Runnable, SocialA
     }
 
     private void sendImage(String ID) throws IOException {
-        File file = new File(IMAGES_FOLDER+ID);
-        BufferedImage bufferedImage=  ImageIO.read(file);
-       ImageIO.write(bufferedImage,"png", clientSocket.getOutputStream());
+//        File file = new File(IMAGES_FOLDER+ID);
+//        BufferedImage bufferedImage=  ImageIO.read(file);
+//       ImageIO.write(bufferedImage,"png", clientSocket.getOutputStream());
+        FileInputStream fileInputStream = new FileInputStream(IMAGES_FOLDER+ID);
+        byte[] bytes = new byte[fileInputStream.available()];
+        fileInputStream.read(bytes);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        objectOutputStream.writeObject(bytes);
 
     }
-    private void receiveImage() throws IOException {
+    private void receiveImage() throws IOException, ClassNotFoundException {
         int imageID = ImagesServer.imageID;
         sendImageID(imageID);
-        BufferedImage bufferedImage = ImageIO.read(clientSocket.getInputStream());
+        byte[] bytes = (byte[]) new ObjectInputStream(clientSocket.getInputStream()).readObject();
         File file = new File(IMAGES_FOLDER+imageID);
-        ImageIO.write(bufferedImage,"jpg",file);
+        BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
+        ImageIO.write(img,"jpg",file);
         increaseImageID();
     }
     private void sendImageID(int ID) throws IOException {
@@ -78,8 +84,9 @@ public class ClientConnection extends GeneralServer implements Runnable, SocialA
             //if any errors introduced remove this
             clientSocket.close();
         } catch (IOException ignored) {
-        }
-        finally {
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
