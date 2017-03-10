@@ -17,7 +17,7 @@ import static ImagesServer.ImagesServer.imageID;
 
 public class ClientConnection extends GeneralServer implements Runnable, SocialAppImages {
 
-    static final String IMAGES_FOLDER = "Images\\";
+    static final String IMAGES_FOLDER = "Images/";
      static final String IMAGES_ID_FILE = "ID.sasf";
 
     public ClientConnection(Socket clientSocket) {
